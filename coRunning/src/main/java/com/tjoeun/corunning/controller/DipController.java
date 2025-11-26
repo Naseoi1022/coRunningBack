@@ -3,6 +3,7 @@ package com.tjoeun.corunning.controller;
 import java.util.ArrayList;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,4 +38,15 @@ public class DipController {
 	    ArrayList<RouteDipDTO> dipList = dipService.getDipList(userId);
 	    return ResponseEntity.ok(dipList);
 	}
+	@DeleteMapping("/remove")
+	public ResponseEntity<String> removeFromDipList(@RequestParam(name = "userId") String userId,
+	                                                @RequestParam(name = "routeId") Long routeId) {
+	    boolean removed = dipService.removeDip(userId, routeId);
+	    if (removed) {
+	        return ResponseEntity.ok("찜목록에서 경로가 삭제되었습니다.");
+	    } else {
+	        return ResponseEntity.badRequest().body("삭제할 찜목록이 존재하지 않습니다.");
+	    }
+	}
+
 }

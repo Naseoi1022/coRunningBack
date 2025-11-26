@@ -1,6 +1,7 @@
 package com.tjoeun.corunning.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -14,4 +15,6 @@ public interface DipRepository extends JpaRepository<RouteDip, Long> {
 
 	List<RouteDip> findByUserId(String userId);
 	
+	Optional<RouteDip> findByUserIdAndRouteId(String userId, Long routeId);
+
 }

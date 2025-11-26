@@ -1,327 +1,55 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8" />
-<title>경로 + 찜목록 통합 테스트</title>
-<script src="https://api.mapbox.com/mapbox-gl-js/v3.14.0/mapbox-gl.js"></script>
-<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-language/v1.0.0/mapbox-gl-language.js'></script>
-<link href="https://api.mapbox.com/mapbox-gl-js/v3.14.0/mapbox-gl.css" rel="stylesheet" />
-<style>
-  body { margin:0; padding:10px; font-family: Arial, sans-serif; }
-  #map { width: 100%; height: 500px; margin-bottom: 10px; }
-  .section { margin-bottom: 20px; }
-  label, input, button { margin: 5px 0; display: block; }
-  ul { padding-left: 20px; }
-  #dipList, #routeInfo { background:#f0f0f0; padding: 10px; max-width: 400px; }
-  button { cursor: pointer; }
-</style>
+  <meta charset="UTF-8" />
+  <title>찜목록 해제 테스트</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    label, input, button { margin: 5px 0; display: block; }
+    #output { margin-top: 20px; font-weight: bold; color: green; }
+  </style>
 </head>
 <body>
+  <h2>찜목록 해제 테스트</h2>
 
-<h2>경로 및 찜목록 통합 테스트</h2>
+  <label for="userIdInput">사용자 ID:</label>
+  <input type="text" id="userIdInput" placeholder="userId 입력" />
 
-<div id="map"></div>
+  <label for="routeIdInput">해제할 경로 ID:</label>
+  <input type="number" id="routeIdInput" placeholder="routeId 입력" />
 
-<div class="section">
-  <h3>경로 생성 및 업로드</h3>
-  <button id="undoBtn">되돌리기</button>
-  <button id="finishBtn">경로 완료 (스냅)</button>
-  <button id="uploadBtn">경로 저장 (API 전송)</button>
-  <p><small>* 지도 클릭하여 경로 포인트 추가, 드래그로 수정 가능</small></p>
-</div>
+  <button id="removeDipBtn">찜목록에서 경로 해제</button>
 
-<div class="section">
-  <h3>경로 조회 및 표시</h3>
-  <input type="number" id="routeIdInput" placeholder="조회할 경로 ID 입력" style="width: 140px;" />
-  <button id="getByIdBtn">ID별 경로 조회</button>
-  <div id="routeInfo">경로 제목 및 정보가 표시됩니다.</div>
-</div>
+  <div id="output"></div>
 
-<hr>
+  <script>
+    document.getElementById('removeDipBtn').onclick = async () => {
+      const userId = document.getElementById('userIdInput').value.trim();
+      const routeId = document.getElementById('routeIdInput').value.trim();
+      const output = document.getElementById('output');
 
-<div class="section">
-  <h3>찜목록 테스트</h3>
-
-  <label>사용자 ID (추가/조회용)</label>
-  <input type="text" id="userIdInput" placeholder="userId 입력" style="width: 140px;" />
-
-  <label>찜할 경로 ID</label>
-  <input type="number" id="likeRouteIdInput" placeholder="경로 ID 입력" style="width: 140px;" />
-
-  <button id="likeBtn">찜목록에 추가</button>
-  <button id="getDipListBtn">사용자 찜목록 조회</button>
-
-  <div id="dipList">
-    <h4>찜목록 결과</h4>
-    <ul id="dipListUl"></ul>
-  </div>
-</div>
-
-<div id="output" style="margin-top:20px; color: green;"></div>
-
-<script>
-mapboxgl.accessToken = "pk.eyJ1IjoiaW4tZm8iLCJhIjoiY21pN2s1am8xMDFzajJrcTY1dnJ3Yzd0dSJ9.RpO7ByvU4AUdJ6xKUuM--g";
-
-const map = new mapboxgl.Map({
-  container: 'map',
-  style: 'mapbox://styles/mapbox/streets-v12',
-  center: [126.9780, 37.5665],
-  zoom: 12
-});
-
-let rawPoints = [];
-let markers = [];
-let routeLayerId = "route-line"; 
-let snappedCoords = [];
-let displayedRouteLayerId = "displayed-route-line"; 
-
-map.on('click', (e) => {
-  const lng = e.lngLat.lng;
-  const lat = e.lngLat.lat;
-  rawPoints.push([lng, lat]);
-
-  const el = document.createElement("div");
-  el.style.background = "red";
-  el.style.color = "white";
-  el.style.borderRadius = "50%";
-  el.style.width = "24px";
-  el.style.height = "24px";
-  el.style.display = "flex";
-  el.style.justifyContent = "center";
-  el.style.alignItems = "center";
-  el.innerText = rawPoints.length;
-
-  const marker = new mapboxgl.Marker(el, { draggable: true })
-    .setLngLat([lng, lat])
-    .addTo(map);
-
-  marker.on("dragend", () => {
-    const idx = markers.indexOf(marker);
-    if (idx !== -1) {
-      const newPos = marker.getLngLat();
-      rawPoints[idx] = [newPos.lng, newPos.lat];
-      drawRawRoute();
-    }
-  });
-
-  markers.push(marker);
-  drawRawRoute();
-});
-
-function drawRawRoute() {
-  if (map.getLayer(routeLayerId)) {
-    map.removeLayer(routeLayerId);
-    map.removeSource(routeLayerId);
-  }
-  if (rawPoints.length < 2) return;
-
-  map.addSource(routeLayerId, {
-    type: "geojson",
-    data: {
-      type: "Feature",
-      geometry: { type: "LineString", coordinates: rawPoints }
-    }
-  });
-
-  map.addLayer({
-    id: routeLayerId,
-    type: "line",
-    source: routeLayerId,
-    paint: {"line-color": "#007bff","line-width": 4}
-  });
-}
-
-function drawSnappedRoute(coords) {
-  if (map.getLayer(routeLayerId)) {
-    map.removeLayer(routeLayerId);
-    map.removeSource(routeLayerId);
-  }
-  map.addSource(routeLayerId, {
-    type: "geojson",
-    data: { type: "Feature", geometry: { type: "LineString", coordinates: coords }}
-  });
-  map.addLayer({
-    id: routeLayerId,
-    type: "line",
-    source: routeLayerId,
-    paint: { "line-color": "#FF5500", "line-width": 5}
-  });
-}
-
-function drawRouteOnMap(coordinates) {
-  if (map.getLayer(displayedRouteLayerId)) {
-    map.removeLayer(displayedRouteLayerId);
-    map.removeSource(displayedRouteLayerId);
-  }
-  map.addSource(displayedRouteLayerId, {
-    type: "geojson",
-    data: { type: "Feature", geometry: { type: "LineString", coordinates } }
-  });
-  map.addLayer({
-    id: displayedRouteLayerId,
-    type: "line",
-    source: displayedRouteLayerId,
-    paint: { "line-color": "#00cc00","line-width": 6,"line-opacity": 0.8}
-  });
-
-  const bounds = coordinates.reduce((b, coord) => b.extend(coord), new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
-  map.fitBounds(bounds, { padding: 50 });
-}
-
-// 되돌리기
-document.getElementById('undoBtn').onclick = () => {
-  if (rawPoints.length === 0) return;
-  rawPoints.pop();
-  const lastMarker = markers.pop();
-  lastMarker.remove();
-  drawRawRoute();
-};
-
-// 경로 완료 (스냅)
-document.getElementById('finishBtn').onclick = async () => {
-  if (rawPoints.length < 2) {
-    alert("경로가 너무 짧습니다.");
-    return;
-  }
-  const coordsString = rawPoints.map(p => `${p[0]},${p[1]}`).join(";");
-
-  const url = `https://api.mapbox.com/matching/v5/mapbox/walking/${coordsString}?geometries=geojson&overview=full&access_token=${mapboxgl.accessToken}`;
-  try {
-    const res = await fetch(url);
-    const data = await res.json();
-
-    if (!data.matchings || data.matchings.length === 0) {
-      alert("스냅 경로 생성 실패");
-      console.log(data);
-      return;
-    }
-
-    snappedCoords = data.matchings[0].geometry.coordinates;
-    drawSnappedRoute(snappedCoords);
-
-    logOutput(`스냅된 경로 (길이: ${snappedCoords.length}):\n${JSON.stringify(snappedCoords, null, 2)}`);
-  } catch (e) {
-    logOutput("경로 스냅 실패: " + e.message);
-  }
-};
-
-// 경로 저장
-document.getElementById('uploadBtn').onclick = async () => {
-  if (snappedCoords.length === 0) {
-    alert("먼저 '경로 완료'를 눌러 스냅된 경로를 생성하세요.");
-    return;
-  }
-  const routeData = {
-    writer: "testUser",
-    route: JSON.stringify(snappedCoords),
-    liked: 0,
-    title: "테스트경로" // 필요시 변경
-  };
-  try {
-    const res = await fetch('/api/routes', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(routeData)
-    });
-    const savedRoute = await res.json();
-    logOutput("경로 저장 완료:\n" + JSON.stringify(savedRoute, null, 2));
-  } catch (e) {
-    logOutput("경로 저장 오류: " + e.message);
-  }
-};
-
-// ID별 경로 조회 및 지도/제목 표시
-document.getElementById('getByIdBtn').onclick = async () => {
-  const id = document.getElementById('routeIdInput').value;
-  if (!id) {
-    alert("조회할 경로 ID를 입력하세요.");
-    return;
-  }
-  try {
-    const res = await fetch(`/api/routes/${id}`);
-    if (res.status === 404) {
-      logOutput(`ID ${id} 경로를 찾을 수 없습니다.`);
-      if (map.getLayer(displayedRouteLayerId)) {
-        map.removeLayer(displayedRouteLayerId);
-        map.removeSource(displayedRouteLayerId);
+      if (!userId || !routeId) {
+        alert("사용자 ID와 경로 ID를 모두 입력하세요.");
+        return;
       }
-      document.getElementById('routeInfo').textContent = "경로 정보가 없습니다.";
-      return;
-    }
-    const data = await res.json();
 
-    const coords = JSON.parse(data.route);
-    drawRouteOnMap(coords);
-
-    document.getElementById('routeInfo').textContent = `경로 제목: ${data.title} | 작가: ${data.writer} | 좋아요: ${data.liked} 거리 : ${data.distance}`;
-    logOutput(`ID ${id} 경로 조회 완료`);
-  } catch (e) {
-    logOutput("조회 오류: " + e.message);
-  }
-};
-
-// 찜목록 추가
-document.getElementById('likeBtn').onclick = async () => {
-  const userId = document.getElementById('userIdInput').value.trim();
-  const routeId = document.getElementById('likeRouteIdInput').value;
-  if (!userId || !routeId) {
-    alert("사용자 ID와 찜할 경로 ID를 모두 입력하세요.");
-    return;
-  }
-
-  try {
-    const res = await fetch(`/api/dip/add?userId=${encodeURIComponent(userId)}&routeId=${routeId}`, {
-      method: 'PUT'
-    });
-    const msg = await res.text();
-    if (res.ok) {
-      logOutput("찜목록 추가 성공: " + msg);
-    } else {
-      logOutput("찜목록 추가 실패: " + msg);
-    }
-  } catch (e) {
-    logOutput("찜목록 추가 오류: " + e.message);
-  }
-};
-
-// 찜목록 조회 및 리스트 표시
-document.getElementById('getDipListBtn').onclick = async () => {
-  const userId = document.getElementById('userIdInput').value.trim();
-  if (!userId) {
-    alert("사용자 ID를 입력하세요.");
-    return;
-  }
-  try {
-    const res = await fetch(`/api/dip/list?userId=${encodeURIComponent(userId)}`);
-    if (!res.ok) {
-      logOutput("찜목록 조회 실패: " + res.statusText);
-      return;
-    }
-    const dipList = await res.json();
-    const ul = document.getElementById('dipListUl');
-    ul.innerHTML = "";
-    if (dipList.length === 0) {
-      ul.innerHTML = "<li>찜목록이 없습니다.</li>";
-    } else {
-      dipList.forEach(item => {
-        const li = document.createElement("li");
-        li.textContent = `경로ID: ${item.routeId}, 기록: ${item.record ?? ''}`;
-        ul.appendChild(li);
-      });
-    }
-    logOutput("찜목록 조회 완료");
-  } catch (e) {
-    logOutput("찜목록 조회 오류: " + e.message);
-  }
-};
-
-function logOutput(message) {
-  const output = document.getElementById('output');
-  output.textContent = message;
-}
-
-map.addControl(new MapboxLanguage());
-</script>
-
+      try {
+        const res = await fetch(`/api/dip/remove?userId=${encodeURIComponent(userId)}&routeId=${routeId}`, {
+          method: 'DELETE'
+        });
+        const msg = await res.text();
+        if (res.ok) {
+          output.textContent = "성공: " + msg;
+          output.style.color = 'green';
+        } else {
+          output.textContent = "실패: " + msg;
+          output.style.color = 'red';
+        }
+      } catch (e) {
+        output.textContent = "오류 발생: " + e.message;
+        output.style.color = 'red';
+      }
+    };
+  </script>
 </body>
 </html>

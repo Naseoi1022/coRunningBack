@@ -2,6 +2,7 @@ package com.tjoeun.corunning.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -40,4 +41,14 @@ public class DipService {
         }
         return dtoList;
     }
+    
+    public boolean removeDip(String userId, Long routeId) {
+        Optional<RouteDip> dipOpt = dipRepository.findByUserIdAndRouteId(userId, routeId);
+        if (dipOpt.isPresent()) {
+            dipRepository.delete(dipOpt.get());
+            return true;
+        }
+        return false;
+    }
+
 }
