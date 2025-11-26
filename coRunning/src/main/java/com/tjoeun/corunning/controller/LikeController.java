@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tjoeun.corunning.exception.CustomException;
 import com.tjoeun.corunning.service.LikeService;
 
 import jakarta.servlet.http.HttpSession;
@@ -28,7 +29,7 @@ public class LikeController {
     	
     	String loginUserId = (String) session.getAttribute("loginUserId");
     	if (loginUserId == null) {
-            throw new RuntimeException("로그인이 필요합니다.");
+            throw new CustomException("로그인이 필요합니다.");
         }
         boolean added = likeService.addLike(loginUserId, routeId);
         if (added) {
