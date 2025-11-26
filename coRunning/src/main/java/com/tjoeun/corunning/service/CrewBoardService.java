@@ -32,8 +32,6 @@ public class CrewBoardService {
 
         board.setDeadline(dto.getDeadline());
         board.setRunningAt(dto.getRunningAt());
-        board.setRouteName(dto.getRouteName());
-        board.setRoutePathJson(dto.getRoutePathJson());
 
         board.setWriterId(writerId);
         board.setCreatedAt(LocalDateTime.now());
@@ -70,8 +68,6 @@ public class CrewBoardService {
         board.setRecruitCount(dto.getRecruitCount());
         board.setDeadline(dto.getDeadline());
         board.setRunningAt(dto.getRunningAt());
-        board.setRouteName(dto.getRouteName());
-        board.setRoutePathJson(dto.getRoutePathJson());
 
         return crewBoardRepository.save(board);
     }

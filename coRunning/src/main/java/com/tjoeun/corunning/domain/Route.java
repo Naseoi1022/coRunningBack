@@ -29,6 +29,9 @@ public class Route {
 	@Column(nullable=false)
 	private String writer;
 	
+	@Column(columnDefinition="CLOB")
+	private String content;
+	
 	@Column(nullable=false, columnDefinition="CLOB")
 	private String route;
 	

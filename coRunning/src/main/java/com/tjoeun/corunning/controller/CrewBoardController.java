@@ -1,18 +1,29 @@
 package com.tjoeun.corunning.controller;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.tjoeun.corunning.domain.BoardType;
 import com.tjoeun.corunning.domain.CrewApplication;
 import com.tjoeun.corunning.domain.CrewBoard;
 import com.tjoeun.corunning.domain.CrewComment;
 import com.tjoeun.corunning.dto.CrewBoardRequestDTO;
 import com.tjoeun.corunning.dto.CrewCommentRequestDTO;
+import com.tjoeun.corunning.exception.LoginRequiredException;
 import com.tjoeun.corunning.service.CrewBoardService;
 import com.tjoeun.corunning.service.CrewCommentService;
+
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/crew-board")
@@ -29,7 +40,7 @@ public class CrewBoardController {
                                  HttpSession session) {
         String loginUserId = (String) session.getAttribute("loginUserId");
         if (loginUserId == null) {
-            throw new RuntimeException("로그인이 필요합니다.");
+            throw new LoginRequiredException("로그인이 필요합니다.");
         }
 
         return crewBoardService.createBoard(dto, loginUserId);
@@ -55,7 +66,7 @@ public class CrewBoardController {
                                  HttpSession session) {
         String loginUserId = (String) session.getAttribute("loginUserId");
         if (loginUserId == null) {
-            throw new RuntimeException("로그인이 필요합니다.");
+            throw new LoginRequiredException("로그인이 필요합니다.");
         }
 
         return crewBoardService.updateBoard(id, dto, loginUserId);
@@ -67,7 +78,7 @@ public class CrewBoardController {
                             HttpSession session) {
         String loginUserId = (String) session.getAttribute("loginUserId");
         if (loginUserId == null) {
-            throw new RuntimeException("로그인이 필요합니다.");
+            throw new LoginRequiredException("로그인이 필요합니다.");
         }
 
         crewBoardService.deleteBoard(id, loginUserId);
@@ -79,7 +90,7 @@ public class CrewBoardController {
                                         HttpSession session) {
         String loginUserId = (String) session.getAttribute("loginUserId");
         if (loginUserId == null) {
-            throw new RuntimeException("로그인이 필요합니다.");
+            throw new LoginRequiredException("로그인이 필요합니다.");
         }
 
         return crewBoardService.applyToBoard(id, loginUserId);
@@ -91,7 +102,7 @@ public class CrewBoardController {
                                                  HttpSession session) {
         String loginUserId = (String) session.getAttribute("loginUserId");
         if (loginUserId == null) {
-            throw new RuntimeException("로그인이 필요합니다.");
+            throw new LoginRequiredException("로그인이 필요합니다.");
         }
 
         return crewBoardService.getApplications(id, loginUserId);
@@ -104,7 +115,7 @@ public class CrewBoardController {
                                      HttpSession session) {
         String loginUserId = (String) session.getAttribute("loginUserId");
         if (loginUserId == null) {
-            throw new RuntimeException("로그인이 필요합니다.");
+            throw new LoginRequiredException("로그인이 필요합니다.");
         }
 
         return crewCommentService.createComment(boardId, dto.getContent(), loginUserId);
@@ -122,7 +133,7 @@ public class CrewBoardController {
                               HttpSession session) {
         String loginUserId = (String) session.getAttribute("loginUserId");
         if (loginUserId == null) {
-            throw new RuntimeException("로그인이 필요합니다.");
+            throw new LoginRequiredException("로그인이 필요합니다.");
         }
 
         crewCommentService.deleteComment(commentId, loginUserId);

@@ -248,7 +248,7 @@ document.getElementById('uploadBtn').onclick = async () => {
       logOutput("경로 저장 완료:\n" + JSON.stringify(savedRoute, null, 2));
     } else {
       const errorMsg = await res.text();
-      logOutput("저장 실패: " + errorMsg);
+      alert("저장 실패: " + errorMsg);
     }
   } catch (err) {
     logOutput("저장 오류: " + err.message);
