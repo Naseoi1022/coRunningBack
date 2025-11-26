@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tjoeun.corunning.service.LikeService;
 
+import jakarta.servlet.http.HttpSession;
+
 @RestController
 @RequestMapping("/api/like")
 public class LikeController {
@@ -17,12 +19,18 @@ public class LikeController {
     public LikeController(LikeService likeService) {
         this.likeService = likeService;
     }
-
+    
+    
+    //좋아요 추가
     @PutMapping("/add")
-    public ResponseEntity<String> addLike(@RequestParam(name = "userId") String userId,
+    public ResponseEntity<String> addLike(HttpSession session,
                                           @RequestParam(name = "routeId") Long routeId) {
-
-        boolean added = likeService.addLike(userId, routeId);
+    	
+    	String loginUserId = (String) session.getAttribute("loginUserId");
+    	if (loginUserId == null) {
+            throw new RuntimeException("로그인이 필요합니다.");
+        }
+        boolean added = likeService.addLike(loginUserId, routeId);
         if (added) {
             return ResponseEntity.ok("추천이 추가되었습니다.");
         } else {

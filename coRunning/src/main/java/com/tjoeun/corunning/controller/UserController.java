@@ -1,12 +1,22 @@
 package com.tjoeun.corunning.controller;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.tjoeun.corunning.domain.User;
 import com.tjoeun.corunning.dto.LoginDTO;
+import com.tjoeun.corunning.exception.CustomException;
 import com.tjoeun.corunning.service.UserService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+
 import jakarta.servlet.http.HttpSession;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -44,10 +54,10 @@ public class UserController {
 
         String loginId = (String) session.getAttribute("loginUserId");
         if (loginId == null) {
-            throw new RuntimeException("로그인해야 수정할 수 있습니다.");
+            throw new CustomException("로그인해야 수정할 수 있습니다.");
         }
         if (!loginId.equals(userId)) {
-            throw new RuntimeException("본인 계정만 수정할 수 있습니다.");
+            throw new CustomException("본인 계정만 수정할 수 있습니다.");
         }
         return userService.updateUser(userId, update);
     }
@@ -59,10 +69,10 @@ public class UserController {
 
         String loginId = (String) session.getAttribute("loginUserId");
         if (loginId == null) {
-            throw new RuntimeException("로그인해야 삭제할 수 있습니다.");
+            throw new CustomException("로그인해야 삭제할 수 있습니다.");
         }
         if (!loginId.equals(userId)) {
-            throw new RuntimeException("본인 계정만 삭제할 수 있습니다.");
+            throw new CustomException("본인 계정만 삭제할 수 있습니다.");
         }
         userService.deleteUser(userId);
         session.invalidate();
@@ -83,7 +93,7 @@ public class UserController {
         String userId = (String) session.getAttribute("loginUserId");
 
         if (userId == null) {
-            throw new RuntimeException("로그인 상태가 아닙니다.");
+            throw new CustomException("로그인 상태가 아닙니다.");
         }
         return userService.getUser(userId);  
         }
