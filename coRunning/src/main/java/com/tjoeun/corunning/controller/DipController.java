@@ -1,0 +1,40 @@
+package com.tjoeun.corunning.controller;
+
+import java.util.ArrayList;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.tjoeun.corunning.dto.RouteDipDTO;
+import com.tjoeun.corunning.service.DipService;
+
+@RestController
+@RequestMapping("/api/dip")
+public class DipController {
+	private final DipService dipService;
+	
+	public DipController(DipService dipService) {
+		this.dipService = dipService;
+	}
+	
+	@PutMapping("/add")
+	public ResponseEntity<String> addToDipList(@RequestParam(name = "userId") String userId,
+            @RequestParam(name = "routeId") Long routeId){
+		boolean exist = dipService.addDip(userId, routeId);
+		
+		if (exist) {
+			return ResponseEntity.ok("경로가 찜목록에 추가되었습니다.");
+        } else {
+            return ResponseEntity.badRequest().body("이미 찜한 경로입니다.");
+        }
+	}
+	@GetMapping("/list")
+	public ResponseEntity<ArrayList<RouteDipDTO>> getList(@RequestParam(name = "userId") String userId) {
+	    ArrayList<RouteDipDTO> dipList = dipService.getDipList(userId);
+	    return ResponseEntity.ok(dipList);
+	}
+}

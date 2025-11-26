@@ -1,0 +1,11 @@
+package com.tjoeun.corunning.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
+public class RouteDipDTO {
+    private Long routeId;
+    private String record;
+}

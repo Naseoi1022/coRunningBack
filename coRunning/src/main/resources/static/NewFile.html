@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Snap-to-Road Test with API and Like Feature</title>
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.14.0/mapbox-gl.js"></script>
+<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-language/v1.0.0/mapbox-gl-language.js'></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.14.0/mapbox-gl.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script> 
+
+<style>
+  body { margin:0; padding:0; font-family: Arial, sans-serif; }
+  #map { width: 100%; height: 600px; }
+  .btn-box { margin: 10px; }
+  button { margin-right: 10px; }
+  #output { white-space: pre-wrap; background: #eee; padding: 10px; max-height: 200px; overflow-y: auto; }
+</style>
+</head>
+<body>
+<h2>스냅 도로 경로 테스트 (Mapbox + Spring Boot API + 좋아요)</h2>
+<div class="btn-box">
+  <button id="undoBtn">되돌리기</button>
+  <button id="finishBtn">경로 완료</button>
+  <button id="uploadBtn">경로 저장 (API 전송)</button>
+  <button id="getAllBtn">모든 경로 조회</button>
+  <button id="getByIdBtn">ID별 경로 조회</button>
+</div>
+<div>
+  <input type="number" id="routeIdInput" placeholder="조회할 경로 ID 입력" style="width: 120px;" />
+</div>
+
+<!-- 좋아요 기능 추가 UI -->
+<div class="btn-box" style="margin-top:10px;">
+  <input type="number" id="likeRouteIdInput" placeholder="좋아요 할 경로 ID 입력" style="width: 140px;" />
+  <button id="likeBtn">좋아요 누르기</button>
+  <button id="checkLikeBtn">좋아요 상태 확인</button>
+</div>
+
+<div id="map"></div>
+<h3>API 응답 출력</h3>
+<div id="output"></div>
+
+<script>
+mapboxgl.accessToken = "pk.eyJ1IjoiaW4tZm8iLCJhIjoiY21pN2s1am8xMDFzajJrcTY1dnJ3Yzd0dSJ9.RpO7ByvU4AUdJ6xKUuM--g";
+
+const map = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/mapbox/streets-v12',
+  center: [126.9780, 37.5665],
+  zoom: 12
+});
+
+let rawPoints = [];
+let markers = [];
+let routeLayerId = "route-line"; // 임시 경로 라인 ID
+let snappedCoords = [];
+let displayedRouteLayerId = "displayed-route-line"; // 조회 경로 라인 ID
+
+map.on('click', (e) => {
+  const lng = e.lngLat.lng;
+  const lat = e.lngLat.lat;
+  rawPoints.push([lng, lat]);
+
+  const el = document.createElement("div");
+  el.style.background = "red";
+  el.style.color = "white";
+  el.style.borderRadius = "50%";
+  el.style.width = "24px";
+  el.style.height = "24px";
+  el.style.display = "flex";
+  el.style.justifyContent = "center";
+  el.style.alignItems = "center";
+  el.innerText = rawPoints.length;
+
+  const marker = new mapboxgl.Marker(el, { draggable: true })
+    .setLngLat([lng, lat])
+    .addTo(map);
+
+  marker.on("dragend", () => {
+    const idx = markers.indexOf(marker);
+    if (idx !== -1) {
+      const newPos = marker.getLngLat();
+      rawPoints[idx] = [newPos.lng, newPos.lat];
+      drawRawRoute();
+    }
+  });
+
+  markers.push(marker);
+  drawRawRoute();
+});
+
+function drawRawRoute() {
+  if (map.getLayer(routeLayerId)) {
+    map.removeLayer(routeLayerId);
+    map.removeSource(routeLayerId);
+  }
+  if (rawPoints.length < 2) return;
+
+  map.addSource(routeLayerId, {
+    type: "geojson",
+    data: {
+      type: "Feature",
+      geometry: {
+        type: "LineString",
+        coordinates: rawPoints
+      }
+    }
+  });
+
+  map.addLayer({
+    id: routeLayerId,
+    type: "line",
+    source: routeLayerId,
+    paint: {
+      "line-color": "#007bff",
+      "line-width": 4
+    }
+  });
+}
+
+function drawSnappedRoute(coords) {
+  if (map.getLayer(routeLayerId)) {
+    map.removeLayer(routeLayerId);
+    map.removeSource(routeLayerId);
+  }
+
+  map.addSource(routeLayerId, {
+    type: "geojson",
+    data: {
+      type: "Feature",
+      geometry: {
+        type: "LineString",
+        coordinates: coords
+      }
+    }
+  });
+
+  map.addLayer({
+    id: routeLayerId,
+    type: "line",
+    source: routeLayerId,
+    paint: {
+      "line-color": "#FF5500",
+      "line-width": 5
+    }
+  });
+}
+
+function drawRouteOnMap(coordinates) {
+  if (map.getLayer(displayedRouteLayerId)) {
+    map.removeLayer(displayedRouteLayerId);
+    map.removeSource(displayedRouteLayerId);
+  }
+
+  map.addSource(displayedRouteLayerId, {
+    type: "geojson",
+    data: {
+      type: "Feature",
+      geometry: {
+        type: "LineString",
+        coordinates: coordinates
+      }
+    }
+  });
+
+  map.addLayer({
+    id: displayedRouteLayerId,
+    type: "line",
+    source: displayedRouteLayerId,
+    paint: {
+      "line-color": "#00cc00",
+      "line-width": 6,
+      "line-opacity": 0.8
+    }
+  });
+
+  const bounds = coordinates.reduce((b, coord) => b.extend(coord), new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
+  map.fitBounds(bounds, { padding: 50 });
+}
+
+document.getElementById('undoBtn').onclick = () => {
+  if (rawPoints.length === 0) return;
+
+  rawPoints.pop();
+  const lastMarker = markers.pop();
+  lastMarker.remove();
+  drawRawRoute();
+};
+
+document.getElementById('finishBtn').onclick = async () => {
+  if (rawPoints.length < 2) {
+    alert("경로가 너무 짧습니다.");
+    return;
+  }
+
+  const coordsString = rawPoints.map(p => `${p[0]},${p[1]}`).join(";");
+
+  const url = `https://api.mapbox.com/matching/v5/mapbox/walking/${coordsString}?geometries=geojson&overview=full&access_token=${mapboxgl.accessToken}`;
+
+  const res = await fetch(url);
+  const data = await res.json();
+
+  if (!data.matchings || data.matchings.length === 0) {
+    alert("스냅 경로 생성 실패");
+    console.log(data);
+    return;
+  }
+
+  snappedCoords = data.matchings[0].geometry.coordinates;
+  drawSnappedRoute(snappedCoords);
+
+  logOutput(`스냅된 경로 (길이: ${snappedCoords.length}):\n${JSON.stringify(snappedCoords, null, 2)}`);
+};
+
+// API 저장 버튼 이벤트 (POST /api/routes)
+document.getElementById('uploadBtn').onclick = async () => {
+  if (snappedCoords.length === 0) {
+    alert("먼저 '경로 완료'를 눌러 스냅된 경로를 생성하세요.");
+    return;
+  }
+
+  // GeoJSON LineString 생성
+  const line = turf.lineString(snappedCoords);
+
+  // 거리 계산 (단위: km)
+  const lengthInKm = turf.length(line, { units: 'kilometers' });
+
+  // 필요에 따라 미터, 소수점 자리 조정
+  const distanceInMeters = Math.round(lengthInKm * 1000);
+
+  const routeData = {
+    writer: "testUser",
+    route: JSON.stringify(snappedCoords),
+    liked: 0,
+    title: "테스트경로",
+    location : "서울",
+    distance: distanceInMeters
+  };
+
+  try {
+    const res = await fetch('/api/routes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(routeData)
+    });
+    if (res.ok) {
+      const savedRoute = await res.json();
+      logOutput("경로 저장 완료:\n" + JSON.stringify(savedRoute, null, 2));
+    } else {
+      const errorMsg = await res.text();
+      logOutput("저장 실패: " + errorMsg);
+    }
+  } catch (err) {
+    logOutput("저장 오류: " + err.message);
+  }
+};
+
+
+// API 모든 경로 조회 (GET /api/routes)
+document.getElementById('getAllBtn').onclick = async () => {
+  try {
+    const res = await fetch('/api/routes');
+    const data = await res.json();
+    logOutput("모든 경로 조회:\n" + JSON.stringify(data, null, 2));
+
+    if (data.length > 0) {
+      const coords = JSON.parse(data[0].route);
+      drawRouteOnMap(coords);
+    }
+  } catch (err) {
+    logOutput("조회 오류: " + err.message);
+  }
+};
+
+// ID별 경로 조회 (GET /api/routes/{id})
+document.getElementById('getByIdBtn').onclick = async () => {
+  const id = document.getElementById('routeIdInput').value;
+  if (!id) {
+    alert("조회할 경로 ID를 입력하세요.");
+    return;
+  }
+  try {
+    const res = await fetch(`/api/routes/${id}`);
+    if (res.status === 404) {
+      logOutput(`ID ${id} 경로를 찾을 수 없습니다.`);
+      if (map.getLayer(displayedRouteLayerId)) {
+        map.removeLayer(displayedRouteLayerId);
+        map.removeSource(displayedRouteLayerId);
+      }
+      return;
+    }
+    const data = await res.json();
+    logOutput(`ID ${id} 경로 조회 결과:\n` + JSON.stringify(data, null, 2));
+
+    const coords = JSON.parse(data.route);
+    drawRouteOnMap(coords);
+  } catch (err) {
+    logOutput("조회 오류: " + err.message);
+  }
+};
+
+// 좋아요 기능 UI
+document.getElementById('likeBtn').onclick = async () => {
+  const routeId = document.getElementById('likeRouteIdInput').value;
+  if (!routeId) {
+    alert("좋아요 할 경로 ID를 입력하세요.");
+    return;
+  }
+  const userId = 1; // 임시 유저 ID, 로그인 연동 시 대체
+
+  try {
+    const res = await fetch(`/api/like/add?userId=${userId}&routeId=${routeId}`, {
+      method: 'PUT'
+    });
+    if (res.ok) {
+      const msg = await res.text();
+      logOutput(`좋아요 성공: ${msg}`);
+    } else {
+      const msg = await res.text();
+      logOutput(`좋아요 실패: ${msg}`);
+    }
+  } catch (err) {
+    logOutput(`좋아요 오류: ${err.message}`);
+  }
+};
+
+
+document.getElementById('checkLikeBtn').onclick = async () => {
+  const routeId = document.getElementById('likeRouteIdInput').value;
+  if (!routeId) {
+    alert("확인할 경로 ID를 입력하세요.");
+    return;
+  }
+  const userId = 1; // 임시 유저 ID
+
+  try {
+    const res = await fetch(`/api/like/check?userId=${userId}&routeId=${routeId}`);
+    if (res.ok) {
+      const liked = await res.json(); // true or false 반환 예상
+      logOutput(`좋아요 상태: ${liked ? "추천함" : "추천 안함"}`);
+    } else {
+      logOutput(`좋아요 상태 확인 실패: ${res.status}`);
+    }
+  } catch (err) {
+    logOutput(`좋아요 상태 확인 오류: ${err.message}`);
+  }
+};
+
+function logOutput(message) {
+  const output = document.getElementById('output');
+  output.textContent = message;
+}
+
+const language = new MapboxLanguage();
+map.addControl(language);
+</script>
+</body>
+</html>

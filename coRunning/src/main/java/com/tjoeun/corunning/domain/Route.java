@@ -38,4 +38,11 @@ public class Route {
 	
 	@Column(columnDefinition="NUMBER DEFAULT 0")
 	private Long liked;
+	
+	@Column(nullable=false)
+	private Long distance;
+	
+	@Column(nullable=false)
+	private String location;
+	
 }
