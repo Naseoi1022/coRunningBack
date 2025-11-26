@@ -51,6 +51,12 @@ public class CrewBoard {
     // 실제 러닝 시간 
     private LocalDateTime runningAt;
 
+    // 경로 이름 
+    private String routeName;
+
+    // 경로 좌표를 JSON 문자열로 저장
+    @Column(length = 4000)
+    private String routePathJson;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
