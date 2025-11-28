@@ -34,7 +34,7 @@ public class RouteCommentService {
 
     // 게시글의 댓글 목록 조회
     public List<RouteComment> getComments(Long routeId) {
-        return routeCommentRepository.findByBoardIdOrderByCreatedAtAsc(routeId);
+        return routeCommentRepository.findByRouteIdOrderByCreatedAtAsc(routeId);
     }
 
     // 댓글 삭제 (작성자만 가능)
