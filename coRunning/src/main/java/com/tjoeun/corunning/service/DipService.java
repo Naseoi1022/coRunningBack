@@ -29,7 +29,6 @@ public class DipService {
         RouteDip dip = new RouteDip();
         dip.setUserId(userId);
         dip.setRouteId(routeId);
-        dip.setCreateAt(LocalDateTime.now());
         dipRepository.save(dip);
         
         return true;
@@ -53,4 +52,16 @@ public class DipService {
         return false;
     }
 
+    public boolean updateDip(String userId, Long routeId, boolean complete, String record) {
+        Optional<RouteDip> dip = dipRepository.findByUserIdAndRouteId(userId, routeId);
+        
+        if (dip.isPresent()) {
+            RouteDip routeDip = dip.get();
+            routeDip.setComplete(complete);
+            routeDip.setRecord(record);
+            dipRepository.save(routeDip);
+            return true;
+        }
+        return false;
+    }
 }

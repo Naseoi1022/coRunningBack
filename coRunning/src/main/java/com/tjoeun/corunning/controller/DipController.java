@@ -33,6 +33,23 @@ public class DipController {
             return ResponseEntity.badRequest().body("이미 찜한 경로입니다.");
         }
 	}
+	
+	@PutMapping("/update")
+	public ResponseEntity<String> updateDip(
+	        @RequestParam(name = "userId") String userId,
+	        @RequestParam(name = "routeId") Long routeId,
+	        @RequestParam(name = "complete", required = false, defaultValue = "false") boolean complete, 
+	        @RequestParam(name = "record") String record) {
+	    
+	    boolean updated = dipService.updateDip(userId, routeId, complete, record);
+	    
+	    if (updated) {
+	        return ResponseEntity.ok("찜목록이 업데이트되었습니다.");
+	    } else {
+	        return ResponseEntity.badRequest().body("업데이트할 찜목록이 존재하지 않습니다.");
+	    }
+	}
+	
 	@GetMapping("/list")
 	public ResponseEntity<ArrayList<RouteDipDTO>> getList(@RequestParam(name = "userId") String userId) {
 	    ArrayList<RouteDipDTO> dipList = dipService.getDipList(userId);

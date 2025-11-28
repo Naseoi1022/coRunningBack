@@ -68,7 +68,7 @@ public class RouteController {
     
 	//댓글작성
 	@PostMapping("/{id}/comments")
-    public RouteComment createComment(@PathVariable("routeId") Long routeId,
+    public RouteComment createComment(@PathVariable("id") Long routeId,
                                      @RequestBody RouteCommentRequestDTO dto,
                                      HttpSession session) {
         String loginUserId = (String) session.getAttribute("loginUserId");
@@ -81,7 +81,7 @@ public class RouteController {
 
     // 게시글 댓글 목록 조회
     @GetMapping("/{id}/comments")
-    public List<RouteComment> getComments(@PathVariable("routeId") Long routeId) {
+    public List<RouteComment> getComments(@PathVariable("id") Long routeId) {
         return routeCommentService.getComments(routeId);
     }
 
