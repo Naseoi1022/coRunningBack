@@ -1,5 +1,6 @@
 package com.tjoeun.corunning.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,7 @@ public class RouteController {
 	    	throw new CustomException("로그인이 필요합니다.");
 	    }
 	    route.setWriter(loginUserId);
+	    route.setCreateAt(LocalDateTime.now());
 
 	    Route savedRoute = routeService.uploadRoute(route);
 	    return ResponseEntity.ok(savedRoute);

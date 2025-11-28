@@ -33,7 +33,7 @@ public class Route {
 	private String route;
 	
 	@Column(columnDefinition="CLOB")
-	private String desc;
+	private String description;
 	
 	@CreatedDate
 	@Column(name="created_at")
