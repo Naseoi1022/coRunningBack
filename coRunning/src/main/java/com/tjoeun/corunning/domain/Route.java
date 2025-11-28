@@ -29,6 +29,9 @@ public class Route {
 	@Column(nullable=false)
 	private String writer;
 	
+	@Column(nullable=false)
+	private String title;
+	
 	@Column(nullable=false, columnDefinition="CLOB")
 	private String route;
 	
@@ -43,7 +46,7 @@ public class Route {
 	private Long liked;
 	
 	@Column(nullable=false)
-	private Long distance;
+	private double distance;
 	
 	@Column(nullable=false)
 	private String location;
