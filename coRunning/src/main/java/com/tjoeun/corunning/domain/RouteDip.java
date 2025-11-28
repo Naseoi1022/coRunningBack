@@ -36,8 +36,4 @@ public class RouteDip {
     @Column(nullable = false)
     private boolean complete = false;
     
-    @CreatedDate
-	@Column(name="created_at")
-	private LocalDateTime createAt;
-    
 }
