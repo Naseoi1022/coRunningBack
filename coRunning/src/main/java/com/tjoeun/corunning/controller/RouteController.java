@@ -3,6 +3,7 @@ package com.tjoeun.corunning.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,26 +12,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tjoeun.corunning.domain.Route;
+import com.tjoeun.corunning.domain.RouteComment;
+import com.tjoeun.corunning.dto.RouteCommentRequestDTO;
 import com.tjoeun.corunning.exception.CustomException;
+import com.tjoeun.corunning.service.RouteCommentService;
 import com.tjoeun.corunning.service.RouteService;
 
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/routes")
+@RequiredArgsConstructor
 public class RouteController {
 	private final RouteService routeService;
-	
-	public RouteController(RouteService routeService) {
-		this.routeService = routeService;
-	}
-	
+	private final RouteCommentService routeCommentService;
 	//코스 업로드
 	@PostMapping
 	public ResponseEntity<?> uploadRoute(@RequestBody Route route, HttpSession session) {
 	    String loginUserId = (String) session.getAttribute("loginUserId");
 	    if (loginUserId == null) {
-	    	throw new CustomException("로그인이 필요합니다.");// 401 상태와 메시지 반환
+	    	throw new CustomException("로그인이 필요합니다.");
 	    }
 	    route.setWriter(loginUserId);
 
@@ -49,4 +51,47 @@ public class RouteController {
 	public Route getRouteById(@PathVariable("id") Long id) {
 		return routeService.getRouteById(id);
 	}
+	
+	// 게시글 삭제 (작성자만 가능)
+    @DeleteMapping("/{id}/remove")
+    public void deleteRoute(@PathVariable("id") Long id,
+                            HttpSession session) {
+        String loginUserId = (String) session.getAttribute("loginUserId");
+        if (loginUserId == null) {
+            throw new RuntimeException("로그인이 필요합니다.");
+        }
+
+        routeService.deleteRoute(id, loginUserId);
+    }
+    
+	//댓글작성
+	@PostMapping("/{id}/comments")
+    public RouteComment createComment(@PathVariable("routeId") Long routeId,
+                                     @RequestBody RouteCommentRequestDTO dto,
+                                     HttpSession session) {
+        String loginUserId = (String) session.getAttribute("loginUserId");
+        if (loginUserId == null) {
+            throw new RuntimeException("로그인이 필요합니다.");
+        }
+
+        return routeCommentService.createComment(routeId, dto.getContent(), loginUserId);
+    }
+
+    // 게시글 댓글 목록 조회
+    @GetMapping("/{id}/comments")
+    public List<RouteComment> getComments(@PathVariable("routeId") Long routeId) {
+        return routeCommentService.getComments(routeId);
+    }
+
+    // 댓글 삭제
+    @DeleteMapping("/comments/{commentId}")
+    public void deleteComment(@PathVariable("commentId") Long commentId,
+                              HttpSession session) {
+        String loginUserId = (String) session.getAttribute("loginUserId");
+        if (loginUserId == null) {
+            throw new RuntimeException("로그인이 필요합니다.");
+        }
+
+        routeCommentService.deleteComment(commentId, loginUserId);
+    }
 }

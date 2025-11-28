@@ -1,9 +1,12 @@
 package com.tjoeun.corunning.domain;
 
+import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import lombok.Data;
@@ -29,6 +32,12 @@ public class RouteDip {
     
     @Column(nullable = false)
     private String record = "00:00:00"; // 필드 기본값 지정
-
+    
+    @Column(nullable = false)
+    private boolean complete = false;
+    
+    @CreatedDate
+	@Column(name="created_at")
+	private LocalDateTime createAt;
     
 }

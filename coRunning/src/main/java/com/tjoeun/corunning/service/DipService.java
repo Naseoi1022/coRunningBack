@@ -1,5 +1,6 @@
 package com.tjoeun.corunning.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +29,7 @@ public class DipService {
         RouteDip dip = new RouteDip();
         dip.setUserId(userId);
         dip.setRouteId(routeId);
+        dip.setCreateAt(LocalDateTime.now());
         dipRepository.save(dip);
         
         return true;

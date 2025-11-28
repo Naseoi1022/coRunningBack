@@ -1,15 +1,11 @@
 package com.tjoeun.corunning.service;
 
-import com.tjoeun.corunning.domain.User;
-import com.tjoeun.corunning.repository.UserRepository;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.tjoeun.corunning.domain.User;
+import com.tjoeun.corunning.repository.UserRepository;
 
 @Service
 public class UserService {

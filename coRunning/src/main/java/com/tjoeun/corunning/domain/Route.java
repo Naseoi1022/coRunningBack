@@ -32,6 +32,9 @@ public class Route {
 	@Column(nullable=false, columnDefinition="CLOB")
 	private String route;
 	
+	@Column(columnDefinition="CLOB")
+	private String desc;
+	
 	@CreatedDate
 	@Column(name="created_at")
 	private LocalDateTime createAt;
@@ -45,4 +48,9 @@ public class Route {
 	@Column(nullable=false)
 	private String location;
 	
+	@Column(nullable=false)
+	private String difficulty;
+	
+	@Column(nullable=false)
+	private String type;
 }
