@@ -7,18 +7,21 @@ import com.tjoeun.corunning.domain.RouteLike;
 import com.tjoeun.corunning.repository.LikeRepository;
 import com.tjoeun.corunning.repository.RouteRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class LikeService {
 
     private final LikeRepository likeRepository;
     private final RouteRepository routeRepository;
 
-    public LikeService(LikeRepository likeRepository, RouteRepository routeRepository) {
-        this.likeRepository = likeRepository;
-        this.routeRepository = routeRepository;
+    public RouteLike getLike(String userId, Long routeId) {
+        return likeRepository.findByIdAndRouteId(userId, routeId)
+                .orElseThrow(() -> new RuntimeException("error"));
     }
-
+    
     // userId + routeId로 중복 검사 후 좋아요 추가
     public boolean addLike(String userId, Long routeId) {
         boolean exists = likeRepository.existsByUserIdAndRouteId(userId, routeId);
@@ -40,5 +43,30 @@ public class LikeService {
         });
 
         return true;
+    }
+    
+    // 추천 취소
+    public boolean deleteLike(String userId, Long routeId) {
+        if (!likeRepository.existsByUserIdAndRouteId(userId, routeId)) {
+            return false; // 추천 없음
+        }
+
+        // 추천 삭제
+        likeRepository.deleteByUserIdAndRouteId(userId, routeId);
+        
+        // Route liked 감소
+        routeRepository.findById(routeId).ifPresent(route -> {
+            if (route.getLiked() > 0) {
+                route.setLiked(route.getLiked() - 1);
+                routeRepository.save(route);
+            }
+        });
+
+        return true;
+    }
+    
+    // 추천 여부 조회
+    public boolean checkLike(String userId, Long routeId) {
+        return likeRepository.existsByUserIdAndRouteId(userId, routeId);
     }
 }
