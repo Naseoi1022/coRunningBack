@@ -15,11 +15,7 @@ public class CrewBoardRequestDTO {
     private String content;
     private String region;
     private BoardType boardType;      // NORMAL / FLASH / DRAWING
-
     private int recruitCount;
     private LocalDate deadline;
-
-    private LocalDateTime runningAt;  // 번개 시각
-    private String routeName;
     private String routePathJson;     // 배열을 JSON 문자열로
 }
