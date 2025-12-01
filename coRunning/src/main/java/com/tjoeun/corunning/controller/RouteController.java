@@ -1,6 +1,5 @@
 package com.tjoeun.corunning.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -36,7 +35,6 @@ public class RouteController {
 	    	throw new CustomException("로그인이 필요합니다.");
 	    }
 	    route.setWriter(loginUserId);
-	    route.setCreateAt(LocalDateTime.now());
 
 	    Route savedRoute = routeService.uploadRoute(route);
 	    return ResponseEntity.ok(savedRoute);
@@ -56,14 +54,14 @@ public class RouteController {
 	
 	// 게시글 삭제 (작성자만 가능)
     @DeleteMapping("/{id}/remove")
-    public void deleteRoute(@PathVariable("id") Long id,
+    public ResponseEntity<String> deleteRoute(@PathVariable("id") Long id,
                             HttpSession session) {
         String loginUserId = (String) session.getAttribute("loginUserId");
         if (loginUserId == null) {
             throw new RuntimeException("로그인이 필요합니다.");
         }
-
         routeService.deleteRoute(id, loginUserId);
+        return ResponseEntity.ok("삭제되었습니다.");
     }
     
 	//댓글작성

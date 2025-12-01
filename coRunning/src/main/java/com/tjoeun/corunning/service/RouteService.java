@@ -1,21 +1,20 @@
 package com.tjoeun.corunning.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tjoeun.corunning.domain.Route;
 import com.tjoeun.corunning.repository.RouteRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class RouteService {
-	@Autowired
-	private RouteRepository routeRepository;
+	private final RouteRepository routeRepository;
 	
 	public Route uploadRoute(Route route) {
-		route.setCreateAt(LocalDateTime.now());
 		return routeRepository.save(route);
 	}
 	

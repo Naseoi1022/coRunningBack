@@ -3,19 +3,17 @@ package com.tjoeun.corunning.domain;
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.SequenceGenerator;
 import lombok.Data;
 
 @Data
 @Entity
-@EntityListeners(AuditingEntityListener.class)
 public class Route {
 	@Id
 	@SequenceGenerator(
@@ -24,6 +22,7 @@ public class Route {
 		allocationSize=1
 		)
 	@GeneratedValue(generator="no")
+	@Column(name="route_id")
 	private Long route_id;
 	
 	@Column(nullable=false)
@@ -32,15 +31,17 @@ public class Route {
 	@Column(nullable=false)
 	private String title;
 	
+	@Lob
 	@Column(nullable=false, columnDefinition="CLOB")
 	private String route;
 	
+	@Lob
 	@Column(columnDefinition="CLOB")
 	private String description;
 	
 	@CreatedDate
 	@Column(name="created_at")
-	private LocalDateTime createAt;
+	private LocalDateTime createdAt;
 	
 	@Column(columnDefinition="NUMBER DEFAULT 0")
 	private Long liked;

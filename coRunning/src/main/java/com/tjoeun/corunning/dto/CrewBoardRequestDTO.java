@@ -1,11 +1,11 @@
 package com.tjoeun.corunning.dto;
 
+import java.time.LocalDate;
+
 import com.tjoeun.corunning.domain.BoardType;
+
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
