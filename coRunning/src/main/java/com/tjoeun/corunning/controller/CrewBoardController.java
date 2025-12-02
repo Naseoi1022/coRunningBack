@@ -96,6 +96,12 @@ public class CrewBoardController {
 
         return crewBoardService.getApplications(id, loginUserId);
     }
+    // 신청 상태 조회
+    @GetMapping("/check")
+    public boolean checkApplication(HttpSession session, @RequestParam(name="boardId") Long boardId) {
+    	String loginUserId = (String) session.getAttribute("loginUserId");
+    	return crewBoardService.checkApplication(boardId, loginUserId);
+    } 
     
  // 댓글 작성
     @PostMapping("/{boardId}/comments")
@@ -127,6 +133,8 @@ public class CrewBoardController {
 
         crewCommentService.deleteComment(commentId, loginUserId);
     }
+    
+    //
 
     
 }
