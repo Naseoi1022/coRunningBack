@@ -124,6 +124,16 @@ public class CrewBoardService {
 
         return saved;
     }
+    
+    //신청 상태 조회
+    public boolean checkApplication(Long boardId, String loginUserId) {
+    	if (crewApplicationRepository.existsByCrewBoardIdAndApplicantId(boardId, loginUserId)) {
+            return true;
+        }else {
+        	return false;
+        }
+    	
+    }
 
     // 신청자 목록 조회 (작성자만 조회 가능)
     public List<CrewApplication> getApplications(Long boardId, String loginUserId) {
