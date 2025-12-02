@@ -96,7 +96,7 @@ public class UserController {
             throw new CustomException("로그인 상태가 아닙니다.");
         }
         return userService.getUser(userId);  
-        }
+    }
     
     //로그아웃
     @PostMapping("/logout")
