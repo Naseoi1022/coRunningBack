@@ -6,6 +6,8 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class RouteDipDTO {
+	private Long dipId;
     private Long routeId;
     private String record;
+    private boolean complete;
 }

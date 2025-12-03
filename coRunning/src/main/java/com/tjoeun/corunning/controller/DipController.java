@@ -36,12 +36,11 @@ public class DipController {
 	
 	@PutMapping("/update")
 	public ResponseEntity<String> updateDip(
-	        @RequestParam(name = "userId") String userId,
-	        @RequestParam(name = "routeId") Long routeId,
+	        @RequestParam(name = "id") Long id,
 	        @RequestParam(name = "complete", required = false, defaultValue = "false") boolean complete, 
 	        @RequestParam(name = "record") String record) {
 	    
-	    boolean updated = dipService.updateDip(userId, routeId, complete, record);
+	    boolean updated = dipService.updateDip(id, complete, record);
 	    
 	    if (updated) {
 	        return ResponseEntity.ok("찜목록이 업데이트되었습니다.");
@@ -57,8 +56,8 @@ public class DipController {
 	}
 	@DeleteMapping("/remove")
 	public ResponseEntity<String> removeFromDipList(@RequestParam(name = "userId") String userId,
-	                                                @RequestParam(name = "routeId") Long routeId) {
-	    boolean removed = dipService.removeDip(userId, routeId);
+            @RequestParam(name = "routeId") Long routeId) {
+		boolean removed = dipService.removeDip(routeId, userId);
 	    if (removed) {
 	        return ResponseEntity.ok("찜목록에서 경로가 삭제되었습니다.");
 	    } else {
