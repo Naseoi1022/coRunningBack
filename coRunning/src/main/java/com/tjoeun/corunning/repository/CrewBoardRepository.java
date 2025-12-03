@@ -10,4 +10,6 @@ public interface CrewBoardRepository extends JpaRepository<CrewBoard, Long> {
 
     // 게시판 종류별 목록 조회 (NORMAL / FLASH / DRAWING)
     List<CrewBoard> findByBoardType(BoardType boardType);
+
+	List<CrewBoard> findByWriterId(String userId);
 }

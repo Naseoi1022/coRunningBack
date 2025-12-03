@@ -1,5 +1,5 @@
 package com.tjoeun.corunning.service;
-
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -20,6 +20,10 @@ public class RouteService {
 	
 	public List<Route> getAllRoutes(){
 		return routeRepository.findAll();
+	}
+	
+	public List<Route> getRouteByUserId(String loginUserId){
+		return routeRepository.findByWriter(loginUserId);
 	}
 	
 	public Route getRouteById(Long id) {

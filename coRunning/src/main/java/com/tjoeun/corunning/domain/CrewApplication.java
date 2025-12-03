@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @Table(name = "crew_application")
+
 public class CrewApplication {
 
     @Id

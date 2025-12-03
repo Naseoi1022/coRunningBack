@@ -69,7 +69,6 @@ public class CrewBoardController {
         if (loginUserId == null) {
             throw new RuntimeException("로그인이 필요합니다.");
         }
-
         crewBoardService.deleteBoard(id, loginUserId);
     }
 
@@ -134,7 +133,13 @@ public class CrewBoardController {
         crewCommentService.deleteComment(commentId, loginUserId);
     }
     
-    //
+    //id로 크루 정보 불러오기
+    @GetMapping("/user/{userId}")
+    public List<CrewBoard> getBoardByUserId(@PathVariable("userId") String userId) {
+        return crewBoardService.getBoardByUserId(userId);
+        
+    }
+    
 
     
 }

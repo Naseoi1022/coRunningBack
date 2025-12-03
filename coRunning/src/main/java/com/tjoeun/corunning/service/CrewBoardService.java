@@ -4,8 +4,11 @@ import com.tjoeun.corunning.domain.*;
 import com.tjoeun.corunning.dto.CrewBoardRequestDTO;
 import com.tjoeun.corunning.repository.CrewApplicationRepository;
 import com.tjoeun.corunning.repository.CrewBoardRepository;
+import com.tjoeun.corunning.repository.CrewCommentRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -18,6 +21,7 @@ public class CrewBoardService {
     private final CrewBoardRepository crewBoardRepository;
     private final CrewApplicationRepository crewApplicationRepository;
     private final UserService userService; // 신청자 정보 조회용
+	private final CrewCommentRepository crewCommentRepository;
 
     // 게시글 생성 (로그인한 사용자 ID를 writerId로 사용)
     public CrewBoard createBoard(CrewBoardRequestDTO dto, String writerId) {
@@ -71,14 +75,16 @@ public class CrewBoardService {
         return crewBoardRepository.save(board);
     }
 
+    
     // 게시글 삭제 (작성자만 가능)
+    @Transactional
     public void deleteBoard(Long id, String loginUserId) {
         CrewBoard board = getBoard(id);
-
         if (!board.getWriterId().equals(loginUserId)) {
             throw new RuntimeException("작성자만 삭제할 수 있습니다.");
         }
-
+        crewApplicationRepository.deleteByCrewBoard_Id(id);
+        crewCommentRepository.deleteByBoard_Id(id);
         crewBoardRepository.delete(board);
     }
 
@@ -145,4 +151,11 @@ public class CrewBoardService {
 
         return crewApplicationRepository.findByCrewBoardId(boardId);
     }
+    //id로 게시판 조회
+    public List<CrewBoard> getBoardByUserId(String userId){
+    	return crewBoardRepository.findByWriterId(userId);
+    	
+    	
+    }
+
 }

@@ -51,6 +51,12 @@ public class RouteController {
 	public Route getRouteById(@PathVariable("id") Long id) {
 		return routeService.getRouteById(id);
 	}
+	//코스 회원 id로 조회
+	@GetMapping("/user/{userId}")
+	public List<Route> getRouteByUserId(@PathVariable("userId") String writer) {
+		return routeService.getRouteByUserId(writer);
+			
+		}
 	
 	// 게시글 삭제 (작성자만 가능)
     @DeleteMapping("/{id}/remove")

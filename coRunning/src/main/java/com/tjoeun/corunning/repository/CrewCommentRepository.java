@@ -9,4 +9,6 @@ public interface CrewCommentRepository extends JpaRepository<CrewComment, Long> 
 
     // 특정 게시글의 댓글을 작성일 오름차순으로 조회
     List<CrewComment> findByBoardIdOrderByCreatedAtAsc(Long boardId);
+    
+    void deleteByBoard_Id(Long boardId);
 }

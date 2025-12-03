@@ -12,4 +12,7 @@ public interface CrewApplicationRepository extends JpaRepository<CrewApplication
 
     //신청한 모든 사람 목록
     List<CrewApplication> findByCrewBoardId(Long crewBoardId);
+    
+    void deleteByCrewBoard_Id(Long crewBoardId);
+    
 }
