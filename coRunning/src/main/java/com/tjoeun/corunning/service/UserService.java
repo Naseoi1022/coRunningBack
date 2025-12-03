@@ -42,6 +42,13 @@ public class UserService {
         // 문제 없으면 생성
         return userRepository.save(user);
     }
+    
+    //아이디 중복체쿠
+    public boolean isIdChecked(String userId) {
+    	boolean available = userRepository.existsByUserId(userId);
+    	return available;
+    	
+    }
 
     // 회원 정보 수정
     public User updateUser(String userId, User update) {

@@ -104,7 +104,7 @@ public class UserController {
         session.invalidate();  
         return "로그아웃 되었습니다.";
     }
-
+    
 
 }
 

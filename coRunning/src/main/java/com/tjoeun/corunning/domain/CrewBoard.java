@@ -52,6 +52,7 @@ public class CrewBoard {
     @Column(length = 4000)
     private String routePathJson;
 
+
     @Column(nullable = false)
     private LocalDateTime createdAt;
     

@@ -72,6 +72,7 @@ public class CrewBoardService {
         board.setDeadline(dto.getDeadline());
         board.setRoutePathJson(dto.getRoutePathJson());
 
+
         return crewBoardRepository.save(board);
     }
 
