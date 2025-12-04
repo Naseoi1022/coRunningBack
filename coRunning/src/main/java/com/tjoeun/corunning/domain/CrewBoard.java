@@ -27,6 +27,9 @@ public class CrewBoard {
 
     @Column(nullable = false)
     private String writerId; // 작성자 ID (User.userId)
+    
+    @Column(nullable=false)
+    private String writer_name;
 
     @Column(nullable = false)
     private String region;   // 지역 (예: 서울/인천 등)

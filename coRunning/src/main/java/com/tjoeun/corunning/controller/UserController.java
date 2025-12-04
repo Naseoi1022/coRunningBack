@@ -84,6 +84,7 @@ public class UserController {
     public String login(@RequestBody LoginDTO loginDTO, HttpSession session) {
         User loginUser = userService.login(loginDTO.getUserId(), loginDTO.getUserPw());
         session.setAttribute("loginUserId", loginUser.getUserId());
+        session.setAttribute("userName", loginUser.getUserName());
         return "로그인 성공!";
     }
     

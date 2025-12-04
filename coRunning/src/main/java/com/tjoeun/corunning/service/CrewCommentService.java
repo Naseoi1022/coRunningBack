@@ -18,7 +18,7 @@ public class CrewCommentService {
     private final CrewBoardRepository crewBoardRepository;
 
     // 댓글 등록
-    public CrewComment createComment(Long boardId, String content, String writerId) {
+    public CrewComment createComment(Long boardId, String content, String writerId, String userName) {
         CrewBoard board = crewBoardRepository.findById(boardId)
                 .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다. id=" + boardId));
 
@@ -27,6 +27,7 @@ public class CrewCommentService {
         comment.setWriterId(writerId);
         comment.setContent(content);
         comment.setCreatedAt(LocalDateTime.now());
+        comment.setWriter_name(userName);
 
         return commentRepository.save(comment);
     }

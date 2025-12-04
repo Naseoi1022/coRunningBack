@@ -22,6 +22,9 @@ public class RouteComment {
     private String writerId;
     
     @Column(nullable=false)
+    private String writer_name;
+    
+    @Column(nullable=false)
     private Long routeId;
     
     @Column(nullable = false, length = 1000)

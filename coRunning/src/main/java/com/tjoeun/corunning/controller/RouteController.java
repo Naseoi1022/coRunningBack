@@ -31,10 +31,12 @@ public class RouteController {
 	@PostMapping
 	public ResponseEntity<?> uploadRoute(@RequestBody Route route, HttpSession session) {
 	    String loginUserId = (String) session.getAttribute("loginUserId");
+	    String userName = (String) session.getAttribute("userName");
 	    if (loginUserId == null) {
 	    	throw new CustomException("로그인이 필요합니다.");
 	    }
 	    route.setWriter(loginUserId);
+	    route.setWriter_name(userName);
 
 	    Route savedRoute = routeService.uploadRoute(route);
 	    return ResponseEntity.ok(savedRoute);
@@ -76,11 +78,12 @@ public class RouteController {
                                      @RequestBody RouteCommentRequestDTO dto,
                                      HttpSession session) {
         String loginUserId = (String) session.getAttribute("loginUserId");
+        String userName = (String) session.getAttribute("userName");
         if (loginUserId == null) {
             throw new RuntimeException("로그인이 필요합니다.");
         }
 
-        return routeCommentService.createComment(routeId, dto.getContent(), loginUserId);
+        return routeCommentService.createComment(routeId, dto.getContent(), loginUserId, userName);
     }
 
     // 게시글 댓글 목록 조회

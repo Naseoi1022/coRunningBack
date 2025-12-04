@@ -32,6 +32,9 @@ public class Route {
 	private String writer;
 	
 	@Column(nullable=false)
+	private String writer_name;
+	
+	@Column(nullable=false)
 	private String title;
 	
 	@Lob

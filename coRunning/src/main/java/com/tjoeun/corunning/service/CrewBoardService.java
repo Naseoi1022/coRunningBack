@@ -24,7 +24,7 @@ public class CrewBoardService {
 	private final CrewCommentRepository crewCommentRepository;
 
     // 게시글 생성 (로그인한 사용자 ID를 writerId로 사용)
-    public CrewBoard createBoard(CrewBoardRequestDTO dto, String writerId) {
+    public CrewBoard createBoard(CrewBoardRequestDTO dto, String writerId, String userName) {
         CrewBoard board = new CrewBoard();
         board.setTitle(dto.getTitle());
         board.setContent(dto.getContent());
@@ -37,6 +37,7 @@ public class CrewBoardService {
         board.setDeadline(dto.getDeadline());
         board.setRoutePathJson(dto.getRoutePathJson());
         board.setWriterId(writerId);
+        board.setWriter_name(userName);
         board.setCreatedAt(LocalDateTime.now());
 
         return crewBoardRepository.save(board);

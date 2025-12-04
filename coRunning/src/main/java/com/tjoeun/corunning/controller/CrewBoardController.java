@@ -28,11 +28,12 @@ public class CrewBoardController {
     public CrewBoard createBoard(@RequestBody CrewBoardRequestDTO dto,
                                  HttpSession session) {
         String loginUserId = (String) session.getAttribute("loginUserId");
+        String userName = (String) session.getAttribute("userName");
         if (loginUserId == null) {
             throw new RuntimeException("로그인이 필요합니다.");
         }
 
-        return crewBoardService.createBoard(dto, loginUserId);
+        return crewBoardService.createBoard(dto, loginUserId, userName);
     }
 
     // 게시글 목록 (type이 없으면 전체, 있으면 해당 타입만 조회)
@@ -108,11 +109,12 @@ public class CrewBoardController {
                                      @RequestBody CrewCommentRequestDTO dto,
                                      HttpSession session) {
         String loginUserId = (String) session.getAttribute("loginUserId");
+        String userName = (String) session.getAttribute("userName");
         if (loginUserId == null) {
             throw new RuntimeException("로그인이 필요합니다.");
         }
 
-        return crewCommentService.createComment(boardId, dto.getContent(), loginUserId);
+        return crewCommentService.createComment(boardId, dto.getContent(), loginUserId, userName);
     }
 
     // 게시글 댓글 목록 조회
