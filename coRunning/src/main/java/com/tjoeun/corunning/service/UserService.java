@@ -27,6 +27,16 @@ public class UserService {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+    
+    // 전체 이름 조회
+    public boolean nameCheck(String name){
+    	if (userRepository.existsByUserName(name)) {
+    		return false;
+    	}else {
+    		return true;
+    	}
+    	
+    }
 
     // 특정 회원 조회
     public User getUser(String userId) {
@@ -53,7 +63,7 @@ public class UserService {
         return userRepository.save(user);
     }
     
-    //아이디 중복체쿠
+    //아이디 중복체크
     public boolean isIdChecked(String userId) {
     	boolean available = userRepository.existsByUserId(userId);
     	return available;

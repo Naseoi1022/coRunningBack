@@ -35,6 +35,12 @@ public class UserController {
     public List<User> getAllUsers() {
         return userService.getAllUsers();
     }
+    
+    //이름 중복 조회
+    @GetMapping("/name")
+    public boolean nameCheck(@RequestParam( name = "userName")String name) {
+    	return userService.nameCheck(name);
+    }
 
     //특정 회원 조회
     @GetMapping("/{userId}")
