@@ -136,9 +136,10 @@ public class CrewBoardController {
     }
     
     //id로 크루 정보 불러오기
-    @GetMapping("/user/{userId}")
-    public List<CrewBoard> getBoardByUserId(@PathVariable("userId") String userId) {
-        return crewBoardService.getBoardByUserId(userId);
+    @GetMapping("/user")
+    public List<CrewBoard> getBoardByUserId(HttpSession session) {
+    	
+        return crewBoardService.getBoardByUserId((String) session.getAttribute("loginUserId"));
         
     }
     

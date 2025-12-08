@@ -54,9 +54,10 @@ public class RouteController {
 		return routeService.getRouteById(id);
 	}
 	//코스 회원 id로 조회
-	@GetMapping("/user/{userId}")
-	public List<Route> getRouteByUserId(@PathVariable("userId") String writer) {
-		return routeService.getRouteByUserId(writer);
+	@GetMapping("/user")
+	public List<Route> getRouteByUserId( HttpSession session) {
+		String loginUserId = (String) session.getAttribute("loginUserId");
+		return routeService.getRouteByUserId(loginUserId);
 			
 		}
 	

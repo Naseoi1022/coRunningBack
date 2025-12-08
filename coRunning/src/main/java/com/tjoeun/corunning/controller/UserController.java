@@ -43,9 +43,9 @@ public class UserController {
     }
 
     //특정 회원 조회
-    @GetMapping("/{userId}")
-    public User getUser(@PathVariable("userId") String userId) {
-        return userService.getUser(userId);
+    @GetMapping("/info")
+    public User getUser(HttpSession session) {
+        return userService.getUser((String) session.getAttribute("loginUserId"));
     }
 
     //회원 정보 생성(가입)
@@ -55,19 +55,18 @@ public class UserController {
     }
 
     //회원 정보 수정
-    @PutMapping("/{userId}")
-    public User updateUser(@PathVariable("userId") String userId,
-                           @RequestBody User update,
+    @PutMapping
+    public User updateUser(@RequestBody User update,
                            HttpSession session) {
 
         String loginId = (String) session.getAttribute("loginUserId");
         if (loginId == null) {
             throw new CustomException("로그인해야 수정할 수 있습니다.");
         }
-        if (!loginId.equals(userId)) {
+        if (!loginId.equals(loginId)) {
             throw new CustomException("본인 계정만 수정할 수 있습니다.");
         }
-        return userService.updateUser(userId, update);
+        return userService.updateUser(loginId, update);
     }
 
     //회원 정보 삭제
