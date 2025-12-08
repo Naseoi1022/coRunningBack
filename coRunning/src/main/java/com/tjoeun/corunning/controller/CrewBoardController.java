@@ -86,15 +86,15 @@ public class CrewBoardController {
     }
 
     // 신청자 목록 조회 (작성자만 가능)
-    @GetMapping("/{id}/applications")
-    public List<CrewApplication> getApplications(@PathVariable("id") Long id,
+    @GetMapping("/{crewBoardId}/applications")
+    public List<CrewApplication> getApplications(@PathVariable("crewBoardId") Long crewBoardId,
                                                  HttpSession session) {
         String loginUserId = (String) session.getAttribute("loginUserId");
         if (loginUserId == null) {
             throw new RuntimeException("로그인이 필요합니다.");
         }
 
-        return crewBoardService.getApplications(id, loginUserId);
+        return crewBoardService.getApplications(crewBoardId, loginUserId);
     }
     // 신청 상태 조회
     @GetMapping("/check")
