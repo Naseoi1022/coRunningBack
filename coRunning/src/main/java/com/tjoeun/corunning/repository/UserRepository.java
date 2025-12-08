@@ -14,11 +14,6 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     // userName 중복 여부
     boolean existsByUserName(String userName);
-
-<<<<<<< Updated upstream
-	
-=======
->>>>>>> Stashed changes
 }
 
 
