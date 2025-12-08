@@ -1,1 +1,3 @@
 /.metadata/
+# Secret properties
+src/main/resources/application-secret.properties
