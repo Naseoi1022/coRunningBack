@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tjoeun.corunning.dto.RouteDipDTO;
 import com.tjoeun.corunning.service.DipService;
 
+import jakarta.servlet.http.HttpSession;
+
 @RestController
 @RequestMapping("/api/dip")
 public class DipController {
@@ -23,9 +25,9 @@ public class DipController {
 	}
 	
 	@PutMapping("/add")
-	public ResponseEntity<String> addToDipList(@RequestParam(name = "userId") String userId,
+	public ResponseEntity<String> addToDipList(HttpSession session,
             @RequestParam(name = "routeId") Long routeId){
-		boolean exist = dipService.addDip(userId, routeId);
+		boolean exist = dipService.addDip((String) session.getAttribute("loginUserId"), routeId);
 		
 		if (exist) {
 			return ResponseEntity.ok("경로가 찜목록에 추가되었습니다.");
@@ -50,14 +52,14 @@ public class DipController {
 	}
 	
 	@GetMapping("/list")
-	public ResponseEntity<ArrayList<RouteDipDTO>> getList(@RequestParam(name = "userId") String userId) {
-	    ArrayList<RouteDipDTO> dipList = dipService.getDipList(userId);
+	public ResponseEntity<ArrayList<RouteDipDTO>> getList(HttpSession session) {
+	    ArrayList<RouteDipDTO> dipList = dipService.getDipList((String) session.getAttribute("loginUserId"));
 	    return ResponseEntity.ok(dipList);
 	}
 	@DeleteMapping("/remove")
-	public ResponseEntity<String> removeFromDipList(@RequestParam(name = "userId") String userId,
+	public ResponseEntity<String> removeFromDipList(HttpSession session,
             @RequestParam(name = "routeId") Long routeId) {
-		boolean removed = dipService.removeDip(routeId, userId);
+		boolean removed = dipService.removeDip(routeId, (String) session.getAttribute("loginUserId"));
 	    if (removed) {
 	        return ResponseEntity.ok("찜목록에서 경로가 삭제되었습니다.");
 	    } else {

@@ -20,7 +20,7 @@ public class EmailVerificationService {
 
     public void sendVerificationCode(String email) {
         String code = generateCode();
-        LocalDateTime expires = LocalDateTime.now().plusMinutes(5);
+        LocalDateTime expires = LocalDateTime.now().plusMinutes(3);
 
         EmailVerification ev = new EmailVerification();
         ev.setEmail(email);
