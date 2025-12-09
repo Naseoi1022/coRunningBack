@@ -23,7 +23,6 @@ public class RouteDip {
     @Column(nullable = false)
     private String userId;    // 유저 식별자 (String이면 String 그대로)
 
-    @Column(nullable = false)
     private Long routeId;     // 경로 ID
     
     @Column(nullable = false)
@@ -31,5 +30,9 @@ public class RouteDip {
     
     @Column(nullable = false)
     private boolean complete = false;
+    
+    private String title;
+    private double distance;
+    
     
 }

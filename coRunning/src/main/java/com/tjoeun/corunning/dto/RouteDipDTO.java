@@ -10,4 +10,6 @@ public class RouteDipDTO {
     private Long routeId;
     private String record;
     private boolean complete;
+    private String title;
+    private double distance;
 }
