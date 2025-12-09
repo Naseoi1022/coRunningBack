@@ -52,7 +52,7 @@ public class CrewBoard {
     private LocalDate deadline;
 
     // 경로 좌표를 JSON 문자열로 저장
-    @Column(nullable=false, columnDefinition="CLOB")
+    @Column(nullable=true, columnDefinition="CLOB")
     private String routePathJson;
 
 
