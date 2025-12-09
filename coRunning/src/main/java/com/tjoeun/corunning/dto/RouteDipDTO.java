@@ -12,4 +12,5 @@ public class RouteDipDTO {
     private boolean complete;
     private String title;
     private double distance;
+    private String location;
 }

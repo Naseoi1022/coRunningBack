@@ -33,6 +33,7 @@ public class RouteDip {
     
     private String title;
     private double distance;
+    private String location;
     
     
 }
