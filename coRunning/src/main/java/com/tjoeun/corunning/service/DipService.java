@@ -51,16 +51,27 @@ public class DipService {
         return false;
     }
 
-    public boolean updateDip(Long id, boolean complete, String record) {
-        Optional<RouteDip> dip = dipRepository.findById(id);
-        
-        if (dip.isPresent()) {
-            RouteDip routeDip = dip.get();
-            routeDip.setComplete(complete);
-            routeDip.setRecord(record);
-            dipRepository.save(routeDip);
-            return true;
-        }
-        return false;
-    }
+    public boolean updateDip(Long id, boolean complete, String record,
+            String title, Double distance, String location) {
+
+			Optional<RouteDip> dipOpt = dipRepository.findById(id);
+			
+			if (dipOpt.isPresent()) {
+				RouteDip dip = dipOpt.get();
+				
+				dip.setComplete(complete);
+				dip.setRecord(record);
+				
+				// routeId가 null → 커스텀 기록
+				if (dip.getRouteId() == null) {
+					dip.setTitle(title);
+					dip.setDistance(distance);
+					dip.setLocation(location);
+					}
+					
+					dipRepository.save(dip);
+					return true;
+				}
+				return false;
+			}
 }

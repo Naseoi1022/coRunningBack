@@ -21,13 +21,19 @@ public interface DipRepository extends JpaRepository<RouteDip, Long> {
 	
 	// DipRepository.java (CAST 제거 - 단순 조회)
 	@Query(value = """
-	    SELECT 
-	        d.record,
-	        r.distance
-	    FROM route_dip d 
-	    JOIN route r ON d.route_id = r.route_id 
-	    WHERE d.user_id = :userId AND d.complete = true
-	    """, nativeQuery = true)
-	List<Object[]> findCompletedRecords(@Param("userId") String userId);
+		    SELECT 
+		        d.record,
+		        CASE 
+		            WHEN d.route_id IS NULL THEN d.distance
+		            ELSE r.distance
+		        END AS distance
+		    FROM route_dip d
+		    LEFT JOIN route r 
+		        ON d.route_id = r.route_id
+		    WHERE d.user_id = :userId
+		      AND d.complete = true
+		    """, nativeQuery = true)
+		List<Object[]> findCompletedRecords(@Param("userId") String userId);
+
 
 }

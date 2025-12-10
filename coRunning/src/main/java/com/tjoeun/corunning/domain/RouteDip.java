@@ -25,8 +25,7 @@ public class RouteDip {
 
     private Long routeId;     // 경로 ID
     
-    @Column(nullable = false)
-    private String record = "00:00:00"; // 필드 기본값 지정
+    private String record; // 필드 기본값 지정
     
     @Column(nullable = false)
     private boolean complete = false;

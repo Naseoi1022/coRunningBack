@@ -34,7 +34,7 @@ public class EmailVerificationService {
     private void sendEmail(String email, String code) {
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(email);
-        msg.setSubject("회원가입 인증코드");
+        msg.setSubject("인증코드");
         msg.setText("인증코드는 다음과 같습니다: " + code + " (3분 이내 입력)");
 
         mailSender.send(msg);
