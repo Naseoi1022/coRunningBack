@@ -118,6 +118,14 @@ public class UserController {
         return userService.existsByEmail(email);
     }
     
+    //비밀번호 수정
+    @PutMapping("/pw")
+    public User update(@RequestParam("userId") String userId,
+                       @RequestParam("newPw") String newPw) {
+        return userService.updateUserPw(userId, newPw);
+    }
+
+    
 
 }
 

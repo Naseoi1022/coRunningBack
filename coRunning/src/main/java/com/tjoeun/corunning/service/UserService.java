@@ -113,4 +113,15 @@ public class UserService {
 		return userRepository.existsByUserId(email);
 		
 	}
+	
+	// 회원 비밀번호 정보 수정
+    public User updateUserPw(String userId, String newPw) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다. id=" + userId));
+        
+        String encodedPw = passwordEncoder.encode(newPw);
+        user.setUserPw(encodedPw);
+        
+        return userRepository.save(user);
+    }
 }
