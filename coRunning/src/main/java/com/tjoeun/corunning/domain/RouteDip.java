@@ -28,7 +28,7 @@ public class RouteDip {
     private String record; // 필드 기본값 지정
     
     @Column(nullable = false)
-    private boolean complete = false;
+    private int complete = 0;
     
     private String title;
     private double distance;

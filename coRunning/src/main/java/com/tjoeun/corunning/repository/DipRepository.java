@@ -31,7 +31,7 @@ public interface DipRepository extends JpaRepository<RouteDip, Long> {
 		    LEFT JOIN route r 
 		        ON d.route_id = r.route_id
 		    WHERE d.user_id = :userId
-		      AND d.complete = true
+		      AND d.complete = 1
 		    """, nativeQuery = true)
 		List<Object[]> findCompletedRecords(@Param("userId") String userId);
 

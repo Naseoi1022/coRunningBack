@@ -58,7 +58,7 @@ public class DipController {
 	            );
 	        newDip.setLocation((String) body.get("location"));
 	        newDip.setRecord((String) body.get("record"));
-	        newDip.setComplete(true);
+	        newDip.setComplete(1);
 
 	        dipRepository.save(newDip);
 
@@ -72,7 +72,7 @@ public class DipController {
 	public ResponseEntity<?> updateDip(@RequestBody RouteDip req) {
 	    boolean success = dipService.updateDip(
 	        req.getId(),
-	        req.isComplete(),
+	        req.getComplete(),
 	        req.getRecord(),
 	        req.getTitle(),
 	        req.getDistance(),

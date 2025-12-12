@@ -37,7 +37,7 @@ public class DipService {
         List<RouteDip> dips = dipRepository.findByUserId(userId);
         ArrayList<RouteDipDTO> dtoList = new ArrayList<>();
         for (RouteDip dip : dips) {
-            dtoList.add(new RouteDipDTO(dip.getId(), dip.getRouteId(), dip.getRecord(), dip.isComplete(), dip.getTitle(), dip.getDistance(), dip.getLocation()));
+            dtoList.add(new RouteDipDTO(dip.getId(), dip.getRouteId(), dip.getRecord(), dip.getComplete(), dip.getTitle(), dip.getDistance(), dip.getLocation()));
         }
         return dtoList;
     }
@@ -51,7 +51,7 @@ public class DipService {
         return false;
     }
 
-    public boolean updateDip(Long id, boolean complete, String record,
+    public boolean updateDip(Long id, int complete, String record,
             String title, Double distance, String location) {
 
 			Optional<RouteDip> dipOpt = dipRepository.findById(id);

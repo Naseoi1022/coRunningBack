@@ -9,7 +9,7 @@ public class RouteDipDTO {
 	private Long dipId;
     private Long routeId;
     private String record;
-    private boolean complete;
+    private int complete;
     private String title;
     private double distance;
     private String location;
