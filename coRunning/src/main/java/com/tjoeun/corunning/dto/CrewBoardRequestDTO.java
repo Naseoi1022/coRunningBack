@@ -18,4 +18,5 @@ public class CrewBoardRequestDTO {
     private int recruitCount;
     private LocalDate deadline;
     private String routePathJson;     // 배열을 JSON 문자열로
+    private String runAt;
 }

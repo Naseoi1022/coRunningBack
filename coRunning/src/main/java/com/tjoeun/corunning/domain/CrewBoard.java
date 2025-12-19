@@ -59,5 +59,6 @@ public class CrewBoard {
     @Column(nullable = false)
     private LocalDateTime createdAt;
     
+    private String runAt;
    
 }
